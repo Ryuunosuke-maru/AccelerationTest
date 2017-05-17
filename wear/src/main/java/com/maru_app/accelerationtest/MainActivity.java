@@ -124,14 +124,17 @@ public class MainActivity extends Activity implements SensorEventListener {
             textView2.setText("upper!");
             motion = 2;
             delay = 4;
+            Log.d(TAG,"upper!");
         } else if (Math.abs(diffY) > 20) {
             textView2.setText("hook!");
             motion = 3;
             delay = 4;
+            Log.d(TAG,"hook!");
         } else if (diffX > 10) {
             if (delay == 0) {
                 textView2.setText("punch!");
                 motion = 1;
+                Log.d(TAG,"punch!");
             }
         }
         if (delay > 0) delay--;
