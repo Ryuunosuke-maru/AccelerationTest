@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.widget.TextView;
 
 import android.support.wearable.view.WatchViewStub;
@@ -20,17 +21,54 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+
 public class MainActivity extends Activity implements SensorEventListener {
 
+    private final String TAG = MainActivity.class.getName();
     private final float GAIN = 0.9f;
+    private final String[] SEND_MESSAGES = {"/Action/NONE", "/Action/PUNCH", "/Action/UPPER", "/Action/HOOK"};
+
+    private TextView mTextView;
     private SensorManager mSensorManager;
+    private GoogleApiClient mGoogleApiClient;
+    private String mNode;
     private float x,y,z;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle){
+                        Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+                            @Override
+                            public void onResult(NodeApi.GetConnectedNodesResult nodes) {
+                                if(nodes.getNodes().size() > 0){
+                                    mNode = nodes.getNodes().get(0).getId();
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i){
+
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult){
+                        Log.d(TAG,"onConnectionFailed   :   " + connectionResult.toString());
+                    }
+                })
+
+                .build();
     }
 
     @Override
@@ -39,12 +77,16 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         Sensor sensor =mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+        mGoogleApiClient.connect();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         mSensorManager.unregisterListener(this);
+
+        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -58,8 +100,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         textView.setText(String.format("X:%f\nY:%f\nZ:%f\n",x,y,z));
         int motion;
         motion = detectMotion(x,y,z);
-        if(motion>0){
-
+        if(motion>0 && mNode != null){
+            Wearable.MessageApi.sendMessage(mGoogleApiClient,mNode,SEND_MESSAGES[motion],null).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>(){
+               @Override
+               public void onResult(MessageApi.SendMessageResult result){
+                   if(!result.getStatus().isSuccess()){
+                       Log.d(TAG,"ERROR : failed to send Message" + result.getStatus());
+                   }
+               }
+            });
         }
     }
 
