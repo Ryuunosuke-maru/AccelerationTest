@@ -31,8 +31,24 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
         setContentView(R.layout.activity_main);
 
         mGoogleApiClient =new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks(){
+                    @Override
+                    public void onConnected(Bundle bundle){
+                        TextView textView = (TextView)findViewById(R.id.textView);
+                        textView.setText("onConnectionSuccess");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int cause){
+
+                    }
+                })
+
+
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener(){
+
+
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult){
                         Log.d(TAG,"onConnectionFailed: " + connectionResult.toString());
@@ -40,7 +56,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                         textView.setText("onConnectionFailed");
                     }
                 })
-                .addApi(Wearable.API)
+
                 .build();
     }
 

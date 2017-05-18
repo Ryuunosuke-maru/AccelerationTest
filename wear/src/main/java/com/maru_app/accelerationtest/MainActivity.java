@@ -6,7 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.widget.TextView;
 
 import android.support.wearable.view.WatchViewStub;
@@ -98,22 +97,22 @@ public class MainActivity extends Activity implements SensorEventListener {
             x = (x * GAIN + event.values[0] * (1 - GAIN));
             y = (y * GAIN + event.values[1] * (1 - GAIN));
             z = (z * GAIN + event.values[2] * (1 - GAIN));
-        }
-        TextView textView = (TextView)findViewById(R.id.textView);
-        textView.setText(String.format("X:%f\nY:%f\nZ:%f\n",x,y,z));
-        int motion;
-        motion = detectMotion(x,y,z);
-        if(motion>0 && mNode != null){
-            Wearable.MessageApi.sendMessage(mGoogleApiClient,mNode,SEND_MESSAGES[motion],null).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>(){
-               @Override
-               public void onResult(MessageApi.SendMessageResult result){
-                   if(!result.getStatus().isSuccess()){
-                       Log.d(TAG,"ERROR : failed to send Message" + result.getStatus());
-                       TextView textView3 =(TextView) findViewById(R.id.textView3);
-                       textView3.setText("ERROR : failed to send Message");
-                   }
-               }
-            });
+            TextView textView = (TextView)findViewById(R.id.textView);
+            textView.setText(String.format("X:%f\nY:%f\nZ:%f\n",x,y,z));
+            int motion;
+            motion = detectMotion(x,y,z);
+            if(motion>0 && mNode != null) {
+                Wearable.MessageApi.sendMessage(mGoogleApiClient, mNode, SEND_MESSAGES[motion], null).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                    @Override
+                    public void onResult(MessageApi.SendMessageResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d(TAG, "ERROR : failed to send Message" + result.getStatus());
+                            TextView textView3 = (TextView) findViewById(R.id.textView3);
+                            textView3.setText("ERROR : failed to send Message");
+                        }
+                    }
+                });
+            }
         }
     }
 
