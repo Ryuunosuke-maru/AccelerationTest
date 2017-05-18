@@ -61,10 +61,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 
                     }
                 })
+
                 .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult){
                         Log.d(TAG,"onConnectionFailed   :   " + connectionResult.toString());
+                        TextView textView3 =(TextView) findViewById(R.id.textView3);
+                        textView3.setText("onConnectionFailed");
                     }
                 })
 
@@ -106,6 +109,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                public void onResult(MessageApi.SendMessageResult result){
                    if(!result.getStatus().isSuccess()){
                        Log.d(TAG,"ERROR : failed to send Message" + result.getStatus());
+                       TextView textView3 =(TextView) findViewById(R.id.textView3);
+                       textView3.setText("ERROR : failed to send Message");
                    }
                }
             });
