@@ -53,10 +53,12 @@ public class MainActivity extends Activity implements SensorEventListener {
                                 }
                             }
                         });
+                        TextView textView3 =(TextView) findViewById(R.id.textView3);
+                        textView3.setText("onConnectionSuccess");
                     }
 
                     @Override
-                    public void onConnectionSuspended(int i){
+                    public void onConnectionSuspended(int cause){
 
                     }
                 })
