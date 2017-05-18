@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -45,6 +48,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                 })
                 .addApi(Wearable.API)
                 .build();
+        mGoogleApiClient.connect();
     }
 
     @Override
