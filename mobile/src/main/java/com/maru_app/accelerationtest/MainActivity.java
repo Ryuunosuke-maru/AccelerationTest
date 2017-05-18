@@ -36,6 +36,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
                     @Override
                     public void onConnectionFailed(ConnectionResult connectionResult){
                         Log.d(TAG,"onConnectionFailed: " + connectionResult.toString());
+                        TextView textView = (TextView)findViewById(R.id.textView);
+                        textView.setText("onConnectionFailed");
                     }
                 })
                 .addApi(Wearable.API)
